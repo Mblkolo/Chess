@@ -1,0 +1,29 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@model RatingViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>title</h2>
+
+<form method="post">
+    <div class="input-group">
+        <span class="input-group-addon" id="basic-addon1">Первый игрок</span>
+        <select asp-for="FirstPlayer" asp-items="Model.Players" class="form-control" aria-describedby="basic-addon1"></select>
+    </div>
+    <div class="input-group">
+        <span class="input-group-addon" id="basic-addon2">Второй игрок</span>
+        <select asp-for="FirstPlayer" asp-items="Model.Players" class="form-control" aria-describedby="basic-addon2"></select>
+    </div>
+    
+    <div class="input-group">
+        <span class="input-group-addon" id="basic-addon3">Резутат</span>
+        <select asp-for="Result" asp-items="Html.GetEnumSelectList<GameResult>()" class="form-control" aria-describedby="basic-addon3"></select>
+    </div>
+   
+
+
+    <input type="submit" value="Добавить" class="btn btn-success"/>
+</form>
