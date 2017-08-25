@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Mvc.Rendering
+﻿@using Chess.Site.Infrastructure
+
 @model RatingViewModel
 
 @{
@@ -6,7 +7,27 @@
     Layout = "_Layout";
 }
 
-<h2>title</h2>
+<h2>Рейтинг игроков</h2>
+<div class="row ">
+    <div class="col-md-3">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Игрок</th>
+                <th>Рейтинг</th>
+            </tr>
+            </thead>
+            @foreach (var rating in Model.Rating)
+            {
+                <tr>
+                    <td>@rating.Name</td>
+                    <td>@rating.Points</td>
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>
 
 <form method="post">
     <div class="row">
@@ -19,10 +40,30 @@
         <div class="col-md-3">
             <select asp-for="Result" asp-items="Html.GetEnumSelectList<GameResult>()" class="form-control" id="result col-md-3"></select>
         </div>
-        <input type="submit" value="Добавить" class="btn btn-success"/>
+        <input type="submit" value="Добавить" class="btn btn-success" />
     </div>
-
-
-    
-
 </form>
+
+<h2>Последнии игры</h2>
+<div class="row ">
+    <div class="col-md-5">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Первый игрок</th>
+                    <th>Второй игрок</th>
+                    <th>Результат</th>
+                </tr>
+            </thead>
+            @foreach (var rating in Model.LatestResults)
+            {
+                <tr>
+                    <td>@rating.FirstPlayer</td>
+                    <td>@rating.SecondPlayer</td>
+                    <td>@rating.Result.EnumDisplayNameFor()</td>
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>

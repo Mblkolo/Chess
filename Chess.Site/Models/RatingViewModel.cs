@@ -11,7 +11,26 @@ namespace Chess.Site.Models
         public string SecondPlayer { get; set; }
 
         public GameResult Result { get; set; }
+
+        public Rating[] Rating { get; set; }
+
+        public ResultViewModel[] LatestResults { get; set; }
     }
+
+    public class ResultViewModel
+    {
+        public string FirstPlayer { get; set; }
+        public string SecondPlayer { get; set; }
+
+        public GameResult Result { get; set; }
+    }
+
+    public class Rating
+    {
+        public decimal Points { get; set; }
+        public string Name { get; set; }
+    }
+
 
     public enum GameResult
     {

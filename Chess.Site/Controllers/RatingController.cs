@@ -19,6 +19,21 @@ namespace Chess.Site.Controllers
                 {
                     new SelectListItem{Text = "Первый", Value = "first"},
                     new SelectListItem{Text = "Второй", Value = "second"},
+                },
+                Rating = new[]
+                {
+                    new Rating{Name = "Вася", Points = 234},
+                    new Rating{Name = "Коля", Points = 231},
+                    new Rating{Name = "Маша", Points = 134},
+                },
+                LatestResults = new []
+                {
+                    new ResultViewModel
+                    {
+                        FirstPlayer = "Вася",
+                        SecondPlayer = "Коля",
+                        Result = GameResult.FirstWin
+                    }
                 }
             });
         }
