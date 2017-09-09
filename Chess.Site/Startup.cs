@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace Chess.Site
+﻿namespace Chess.Site
 {
+    using Dal;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -21,12 +18,17 @@ namespace Chess.Site
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<DbConnectionOption>(Configuration.GetSection("DbConnection"));
+            services.AddTransient<SessionFactory>();
+
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, SessionFactory sessionFactory)
         {
+            CreateDateBaseIfNotExist(sessionFactory);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -44,6 +46,19 @@ namespace Chess.Site
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+            });
+        }
+
+        private void CreateDateBaseIfNotExist(SessionFactory sessionFactory)
+        {
+            sessionFactory.Execute(s =>
+            {
+                int tableCount =
+                    s.ExecuteScalar<int>("select count(*) from sqlite_master as tables where type='table'");
+                if (tableCount == 0)
+                {
+                    //TODO код создания таблиц
+                }
             });
         }
     }
