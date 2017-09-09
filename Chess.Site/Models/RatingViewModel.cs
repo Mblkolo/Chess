@@ -19,8 +19,8 @@ namespace Chess.Site.Models
 
     public class ResultViewModel
     {
-        public string FirstPlayer { get; set; }
-        public string SecondPlayer { get; set; }
+        public string WhitePlayer { get; set; }
+        public string BlackPlayer { get; set; }
 
         public GameResult Result { get; set; }
     }

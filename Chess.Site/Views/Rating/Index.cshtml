@@ -32,10 +32,10 @@
 <form method="post">
     <div class="row">
         <div class="col-md-3">
-            <select asp-for="FirstPlayer" asp-items="Model.Players" id="firstPlayer" class="form-control col-md-3"></select>
+            <select asp-for="FirstPlayer" asp-items="Model.Players" id="whitePlayer" class="form-control col-md-3"></select>
         </div>
         <div class="col-md-3">
-            <select asp-for="FirstPlayer" asp-items="Model.Players" id="secondPlayer" class="form-control col-md-3"></select>
+            <select asp-for="FirstPlayer" asp-items="Model.Players" id="blackPlayer" class="form-control col-md-3"></select>
         </div>
         <div class="col-md-3">
             <select asp-for="Result" asp-items="Html.GetEnumSelectList<GameResult>()" class="form-control" id="result col-md-3"></select>
@@ -50,16 +50,16 @@
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>Первый игрок</th>
-                    <th>Второй игрок</th>
+                    <th>Белые</th>
+                    <th>Чёрные</th>
                     <th>Результат</th>
                 </tr>
             </thead>
             @foreach (var rating in Model.LatestResults)
             {
                 <tr>
-                    <td>@rating.FirstPlayer</td>
-                    <td>@rating.SecondPlayer</td>
+                    <td>@rating.WhitePlayer</td>
+                    <td>@rating.BlackPlayer</td>
                     <td>@rating.Result.EnumDisplayNameFor()</td>
                 </tr>
             }

@@ -30,8 +30,8 @@ namespace Chess.Site.Controllers
                 {
                     new ResultViewModel
                     {
-                        FirstPlayer = "Вася",
-                        SecondPlayer = "Коля",
+                        WhitePlayer = "Вася",
+                        BlackPlayer = "Коля",
                         Result = GameResult.FirstWin
                     }
                 }
