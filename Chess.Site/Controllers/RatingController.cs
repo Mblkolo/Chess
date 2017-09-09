@@ -1,5 +1,6 @@
 ﻿namespace Chess.Site.Controllers
 {
+    using System.Linq;
     using Dal;
     using Microsoft.AspNetCore.Mvc;
     using Models;
@@ -17,46 +18,52 @@
 
         public IActionResult Index()
         {
-            return View(new RatingViewModel
+            var viewModel = sessionFactory.Execute(s =>
             {
-                Players = new[]
+                var players = GetPlayers(s);
+
+                return new RatingViewModel
                 {
-                    new SelectListItem {Text = "Первый", Value = "first"},
-                    new SelectListItem {Text = "Второй", Value = "second"},
-                },
-                Rating = new[]
-                {
-                    new Rating {Name = "Вася", Points = 234},
-                    new Rating {Name = "Коля", Points = 231},
-                    new Rating {Name = "Маша", Points = 134},
-                },
-                LatestResults = new[]
-                {
-                    new ResultViewModel
+                    Players = players.Select(x => new SelectListItem { Text = x.Name, Value = x.Id }).ToArray(),
+                    Rating = players.OrderByDescending(x => x.Decipoints)
+                                    .ThenBy(x => x.Id)
+                                    .Select(x => new Rating
+                                                 {
+                                                     Name = x.Name,
+                                                     Points = x.Points
+                                                 }
+                                    )
+                                    .ToArray()
+                    ,
+                    LatestResults = new[]
                     {
-                        WhitePlayer = "Вася",
-                        BlackPlayer = "Коля",
-                        Result = GameResult.FirstWin
+                        new ResultViewModel
+                        {
+                            WhitePlayer = "Вася",
+                            BlackPlayer = "Коля",
+                            Result = GameResult.WhiteWin
+                        }
                     }
-                }
+                };
             });
+
+            return View(viewModel);
+        }
+
+        private Player[] GetPlayers(Session session)
+        {
+            return session.Query<Player>("SELECT * FROM players ORDER BY id");
         }
 
         [HttpGet]
         public IActionResult Players()
         {
-            ViewResult result = null;
-            sessionFactory.Execute(s =>
+            var players = sessionFactory.Execute(s => GetPlayers(s));
+
+            return View(new PlayersViewModel
             {
-                var players = s.Query<Player>("SELECT * FROM players ORDER BY id");
-
-                result = View(new PlayersViewModel
-                {
-                    Players = players
-                });
+                Players = players
             });
-
-            return result;
         }
 
         [HttpPost]

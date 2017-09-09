@@ -34,13 +34,13 @@ namespace Chess.Site.Models
 
     public enum GameResult
     {
-        [Display(Name = "Первый победил")]
-        FirstWin,
+        [Display(Name = "Белые победили")]
+        WhiteWin,
 
         [Display(Name = "Ничья")]
         NoWins,
 
-        [Display(Name = "Второй победил")]
-        LastWin
+        [Display(Name = "Чёрные победили")]
+        BlackWin
     }
 }

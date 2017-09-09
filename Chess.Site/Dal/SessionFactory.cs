@@ -18,13 +18,24 @@
 
         public void Execute(Action<Session> action)
         {
+            Execute<object>(x =>
+            {
+                action(x);
+                return null;
+            });
+        }
+
+        public T Execute<T>(Func<Session, T> action)
+        {
             using (var connection = new SqliteConnection(dbConnectionOption.ConnectionString))
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    action(new Session(connection, transaction));
+                    var result = action(new Session(connection, transaction));
                     transaction.Commit();
+
+                    return result;
                 }
             }
         }
