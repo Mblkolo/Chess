@@ -1,32 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Chess.Site.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
-
-namespace Chess.Site.Controllers
+﻿namespace Chess.Site.Controllers
 {
+    using Dal;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Chess.Site.Models;
+    using Domain;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+
     public class RatingController : Controller
     {
+        private readonly SessionFactory sessionFactory;
+
+        public RatingController(SessionFactory sessionFactory)
+        {
+            this.sessionFactory = sessionFactory;
+        }
+
         public IActionResult Index()
         {
             return View(new RatingViewModel
             {
-                Players = new []
+                Players = new[]
                 {
-                    new SelectListItem{Text = "Первый", Value = "first"},
-                    new SelectListItem{Text = "Второй", Value = "second"},
+                    new SelectListItem {Text = "Первый", Value = "first"},
+                    new SelectListItem {Text = "Второй", Value = "second"},
                 },
                 Rating = new[]
                 {
-                    new Rating{Name = "Вася", Points = 234},
-                    new Rating{Name = "Коля", Points = 231},
-                    new Rating{Name = "Маша", Points = 134},
+                    new Rating {Name = "Вася", Points = 234},
+                    new Rating {Name = "Коля", Points = 231},
+                    new Rating {Name = "Маша", Points = 134},
                 },
-                LatestResults = new []
+                LatestResults = new[]
                 {
                     new ResultViewModel
                     {
@@ -36,6 +45,23 @@ namespace Chess.Site.Controllers
                     }
                 }
             });
+        }
+
+        [HttpGet]
+        public IActionResult Players()
+        {
+            ViewResult result = null;
+            sessionFactory.Execute(s =>
+            {
+                var players = s.Query<Player>("SELECT * FROM players ORDER BY id");
+
+                result = View(new PlayersViewModel
+                {
+                    Players = players
+                });
+            });
+
+            return result;
         }
     }
 }

@@ -24,5 +24,10 @@ namespace Chess.Site.Dal
         {
             return connection.ExecuteScalar<T>(sql, param, transaction);
         }
+
+        public void Execute(string sql, object param = null)
+        {
+            connection.Execute(sql, param, transaction);
+        }
     }
 }

@@ -53,11 +53,15 @@
         {
             sessionFactory.Execute(s =>
             {
-                int tableCount =
-                    s.ExecuteScalar<int>("select count(*) from sqlite_master as tables where type='table'");
+                int tableCount = s.ExecuteScalar<int>("select count(*) from sqlite_master as tables where type='table'");
                 if (tableCount == 0)
                 {
-                    //TODO код создания таблиц
+                    s.Execute(
+                        @"CREATE TABLE players(
+                            id INTEGER PRIMARY KEY ASC AUTOINCREMENT,
+                            name TEXT NOT NULL,
+                            slackNickname TEXT
+                        )");
                 }
             });
         }
