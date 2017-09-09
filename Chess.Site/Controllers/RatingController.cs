@@ -1,13 +1,8 @@
 ﻿namespace Chess.Site.Controllers
 {
     using Dal;
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Chess.Site.Models;
+    using Models;
     using Domain;
     using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -62,6 +57,21 @@
             });
 
             return result;
+        }
+
+        [HttpPost]
+        public IActionResult Players(Player dto)
+        {
+            if (string.IsNullOrEmpty(dto.Name))
+                return RedirectToAction("Players");
+
+            sessionFactory.Execute(s =>
+            {
+                s.Execute("INSERT INTO players(name, slackNickname) VALUES(@Name, @SlackNickname)",
+                    new {dto.Name, dto.SlackNickname});
+            });
+
+            return RedirectToAction("Players");
         }
     }
 }
