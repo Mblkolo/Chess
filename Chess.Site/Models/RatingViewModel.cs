@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Chess.Site.Models
 {
+    using System;
+
     public class RatingViewModel
     {
         public SelectListItem[] Players { get; set; }
@@ -26,8 +28,13 @@ namespace Chess.Site.Models
 
     public class ResultViewModel
     {
+        public DateTime PlayedAt { get; set; }
+
         public string WhitePlayer { get; set; }
         public string BlackPlayer { get; set; }
+
+        public decimal WhiteDeltaPoints { get; set; }
+        public decimal BlackDeltaPoints { get; set; }
 
         public Winner Winner { get; set; }
     }

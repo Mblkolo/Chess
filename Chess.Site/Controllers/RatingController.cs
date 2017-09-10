@@ -41,7 +41,10 @@
                                                   {
                                                       Winner = x.Winner,
                                                       BlackPlayer = players.Single(p => p.Id == x.BlackPlayerId).Name,
-                                                      WhitePlayer = players.Single(p => p.Id == x.WhitePlayerId).Name
+                                                      WhitePlayer = players.Single(p => p.Id == x.WhitePlayerId).Name,
+                                                      PlayedAt = x.CreatedAt,
+                                                      BlackDeltaPoints = x.BlackDeltaPoints,
+                                                      WhiteDeltaPoints = x.WhiteDeltaPoints
                                                   }
                                      )
                                      .ToArray()

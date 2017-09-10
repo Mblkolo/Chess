@@ -9,7 +9,10 @@
         public static readonly int StartDecipoints = 1000 * 100;
 
         public int WhiteDeltaDecipoints { get; private set; }
+        public decimal WhiteDeltaPoints => WhiteDeltaDecipoints / 100m;
+
         public int BlackDeltaDecipoints { get; private set; }
+        public decimal BlackDeltaPoints => BlackDeltaDecipoints / 100m;
 
         public int WhitePlayerId { get; private set; }
         public int BlackPlayerId { get; private set; }

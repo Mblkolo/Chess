@@ -21,7 +21,7 @@
             {
                 <tr>
                     <td>@rating.Name</td>
-                    <td>@rating.Points</td>
+                    <td>@rating.Points.ToString("0.##")</td>
                 </tr>
             }
 
@@ -46,10 +46,11 @@
 
 <h2>Последние игры</h2>
 <div class="row ">
-    <div class="col-md-5">
+    <div class="col-md-7">
         <table class="table table-hover">
             <thead>
                 <tr>
+                    <th>Дата</th>
                     <th>Белые</th>
                     <th>Чёрные</th>
                     <th>Результат</th>
@@ -58,8 +59,9 @@
             @foreach (var rating in Model.LatestResults)
             {
                 <tr>
-                    <td>@rating.WhitePlayer</td>
-                    <td>@rating.BlackPlayer</td>
+                    <td>@rating.PlayedAt.AddHours(5).ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@rating.WhitePlayer @rating.WhiteDeltaPoints.ToString("+0.##;-0.##;0")</td>
+                    <td>@rating.BlackPlayer @rating.BlackDeltaPoints.ToString("+0.##;-0.##;0")</td>
                     <td>@rating.Winner.EnumDisplayNameFor()</td>
                 </tr>
             }
