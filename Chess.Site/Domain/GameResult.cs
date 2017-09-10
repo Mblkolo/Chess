@@ -24,6 +24,7 @@
             WhitePlayerId = whitePlayer.Id;
             BlackPlayerId = blackPlayer.Id;
             Winner = winner;
+            CreatedAt = DateTime.UtcNow;
 
             Update(whitePlayer, blackPlayer, winner == Winner.White, winner == Winner.Black);
         }
@@ -61,9 +62,9 @@
             decimal dra = ra / 100m;
             decimal drb = rb / 100m;
 
-            decimal ea = 1 / (1 + (decimal)Pow(10, (double)(dra - drb) / 400d));
+            decimal ea = 1 / (1 + (decimal)Pow(10, (double)(drb - dra) / 400d));
 
-            return (int)Round(K * (sa - ea) * 10, 0);
+            return (int)Round(K * (sa - ea) * 100m, 0);
         }
     }
 }

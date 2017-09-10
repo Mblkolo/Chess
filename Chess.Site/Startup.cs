@@ -67,8 +67,8 @@
                     s.Execute(
                         @"CREATE TABLE gameResults(
                             id INTEGER PRIMARY KEY ASC AUTOINCREMENT,
-                            whitePlayers INTEGER NOT NULL REFERENCES players(ID),
-                            blackPlayers INTEGER NOT NULL REFERENCES players(ID),
+                            whitePlayerId INTEGER NOT NULL REFERENCES players(ID),
+                            blackPlayerId INTEGER NOT NULL REFERENCES players(ID),
                             whiteDeltaDecipoints INTEGER NOT NULL,
                             blackDeltaDecipoints INTEGER NOT NULL,
                             winner TEXT NOT NULL,

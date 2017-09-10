@@ -16,12 +16,20 @@ namespace Chess.Site.Models
         public ResultViewModel[] LatestResults { get; set; }
     }
 
+    public class CreateGameResultDto
+    {
+        public int WhitePlayerId { get; set; }
+        public int BlackPlayerId { get; set; }
+
+        public Winner Winner { get; set; }
+    }
+
     public class ResultViewModel
     {
         public string WhitePlayer { get; set; }
         public string BlackPlayer { get; set; }
 
-        public Winner Result { get; set; }
+        public Winner Winner { get; set; }
     }
 
     public class Rating
