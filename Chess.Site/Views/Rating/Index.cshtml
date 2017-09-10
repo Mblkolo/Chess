@@ -32,13 +32,13 @@
 <form method="post">
     <div class="row">
         <div class="col-md-3">
-            <select asp-for="FirstPlayer" asp-items="Model.Players" id="whitePlayer" class="form-control col-md-3"></select>
+            <select asp-for="WhitePlayer" asp-items="Model.Players" id="whitePlayer" class="form-control col-md-3"></select>
         </div>
         <div class="col-md-3">
-            <select asp-for="FirstPlayer" asp-items="Model.Players" id="blackPlayer" class="form-control col-md-3"></select>
+            <select asp-for="WhitePlayer" asp-items="Model.Players" id="blackPlayer" class="form-control col-md-3"></select>
         </div>
         <div class="col-md-3">
-            <select asp-for="Result" asp-items="Html.GetEnumSelectList<GameResult>()" class="form-control" id="result col-md-3"></select>
+            <select asp-for="Winner" asp-items="Html.GetEnumSelectList<Winner>()" class="form-control" id="result col-md-3"></select>
         </div>
         <input type="submit" value="Добавить" class="btn btn-success" />
     </div>

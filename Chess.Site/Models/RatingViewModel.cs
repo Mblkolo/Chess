@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Chess.Site.Models
@@ -7,10 +6,10 @@ namespace Chess.Site.Models
     public class RatingViewModel
     {
         public SelectListItem[] Players { get; set; }
-        public string FirstPlayer { get; set; }
-        public string SecondPlayer { get; set; }
+        public string WhitePlayer { get; set; }
+        public string BlackPlayer { get; set; }
 
-        public GameResult Result { get; set; }
+        public Winner Winner { get; set; }
 
         public Rating[] Rating { get; set; }
 
@@ -22,7 +21,7 @@ namespace Chess.Site.Models
         public string WhitePlayer { get; set; }
         public string BlackPlayer { get; set; }
 
-        public GameResult Result { get; set; }
+        public Winner Result { get; set; }
     }
 
     public class Rating
@@ -32,15 +31,15 @@ namespace Chess.Site.Models
     }
 
 
-    public enum GameResult
+    public enum Winner
     {
         [Display(Name = "Белые победили")]
-        WhiteWin,
-
-        [Display(Name = "Ничья")]
-        NoWins,
+        White,
 
         [Display(Name = "Чёрные победили")]
-        BlackWin
+        Black,
+
+        [Display(Name = "Ничья")]
+        Nobody
     }
 }

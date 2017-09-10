@@ -24,7 +24,7 @@
 
                 return new RatingViewModel
                 {
-                    Players = players.Select(x => new SelectListItem { Text = x.Name, Value = x.Id }).ToArray(),
+                    Players = players.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() }).ToArray(),
                     Rating = players.OrderByDescending(x => x.Decipoints)
                                     .ThenBy(x => x.Id)
                                     .Select(x => new Rating
@@ -35,15 +35,16 @@
                                     )
                                     .ToArray()
                     ,
-                    LatestResults = new[]
-                    {
-                        new ResultViewModel
-                        {
-                            WhitePlayer = "Вася",
-                            BlackPlayer = "Коля",
-                            Result = GameResult.WhiteWin
-                        }
-                    }
+                    LatestResults = s.Query<GameResult>("SELECT * FROM gameResults ORDER BY createdAt DESC")
+                                     .Select(x => new ResultViewModel
+                                                  {
+                                                      Result = x.Winner,
+                                                      BlackPlayer = players.Single(p => p.Id == x.BlackPlayerId).Name,
+                                                      WhitePlayer = players.Single(p => p.Id == x.WhitePlayerId).Name
+                                                  }
+                                     )
+                                     .ToArray()
+
                 };
             });
 
@@ -74,8 +75,8 @@
 
             sessionFactory.Execute(s =>
             {
-                s.Execute("INSERT INTO players(name, slackNickname) VALUES(@Name, @SlackNickname)",
-                    new {dto.Name, dto.SlackNickname});
+                s.Execute("INSERT INTO players(name, slackNickname) VALUES(@Name, @SlackNickname, @Decipoints)",
+                    new {dto.Name, dto.SlackNickname, Decipoints = GameResult.StartDecipoints});
             });
 
             return RedirectToAction("Players");
