@@ -6,14 +6,14 @@
 
     public class SessionFactory
     {
-        private readonly DbConnectionOption dbConnectionOption;
+        private readonly DbConnectionOptions dbConnectionOptions;
 
-        public SessionFactory(IOptions<DbConnectionOption> dbConnectionOption)
+        public SessionFactory(IOptions<DbConnectionOptions> dbConnectionOption)
         {
             if (dbConnectionOption?.Value?.ConnectionString == null)
                 throw new ArgumentNullException(nameof(dbConnectionOption));
 
-            this.dbConnectionOption = dbConnectionOption.Value;
+            this.dbConnectionOptions = dbConnectionOption.Value;
         }
 
         public void Execute(Action<Session> action)
@@ -27,7 +27,7 @@
 
         public T Execute<T>(Func<Session, T> action)
         {
-            using (var connection = new SqliteConnection(dbConnectionOption.ConnectionString))
+            using (var connection = new SqliteConnection(dbConnectionOptions.ConnectionString))
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())

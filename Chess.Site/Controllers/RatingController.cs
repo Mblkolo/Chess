@@ -5,15 +5,19 @@
     using Microsoft.AspNetCore.Mvc;
     using Models;
     using Domain;
+    using Integration;
     using Microsoft.AspNetCore.Mvc.Rendering;
+    using Infrastructure;
 
     public class RatingController : Controller
     {
         private readonly SessionFactory sessionFactory;
+        private readonly SlackService slackService;
 
-        public RatingController(SessionFactory sessionFactory)
+        public RatingController(SessionFactory sessionFactory, SlackService slackService)
         {
             this.sessionFactory = sessionFactory;
+            this.slackService = slackService;
         }
 
         [HttpGet]
@@ -61,19 +65,26 @@
             if (dto.BlackPlayerId == dto.WhitePlayerId)
                 return RedirectToAction("Index");
 
+            string message = null;
             sessionFactory.Execute(s =>
             {
                 var whitePlayer = GetPlayerById(s, dto.WhitePlayerId);
                 var blackPlayer = GetPlayerById(s, dto.BlackPlayerId);
+                var whiteRating = whitePlayer.Points;
+                var blackRating = blackPlayer.Points;
+
 
                 var result = new GameResult(whitePlayer, blackPlayer, dto.Winner);
-
                 s.Execute(@"INSERT INTO gameResults(whitePlayerId, blackPlayerId, whiteDeltaDecipoints, blackDeltaDecipoints, winner, createdAt)
                             VALUES(@WhitePlayerId, @BlackPlayerId, @WhiteDeltaDecipoints, @BlackDeltaDecipoints, @Winner, @CreatedAt)", result);
 
                 UpdatePlayerDecipoints(s, whitePlayer);
                 UpdatePlayerDecipoints(s, blackPlayer);
+
+                message = $"{whitePlayer.Name} vs {blackPlayer.Name}... {dto.Winner.EnumDisplayNameFor()}!\n   {whitePlayer.Name} {whiteRating} -> {whitePlayer.Points}\n   {blackPlayer.Name} {blackRating} -> {blackPlayer.Points} ";
             });
+
+            slackService.SendMessage(message);
 
             return RedirectToAction("Index");
         }

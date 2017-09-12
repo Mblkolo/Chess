@@ -1,6 +1,7 @@
 ﻿namespace Chess.Site
 {
     using Dal;
+    using Integration;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -18,8 +19,11 @@
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<DbConnectionOption>(Configuration.GetSection("DbConnection"));
+            services.Configure<DbConnectionOptions>(Configuration.GetSection("DbConnection"));
+            services.Configure<SlackOptions>(Configuration.GetSection("Slack"));
+
             services.AddTransient<SessionFactory>();
+            services.AddTransient<SlackService>();
 
             services.AddMvc();
         }
