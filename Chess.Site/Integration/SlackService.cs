@@ -21,7 +21,7 @@ namespace Chess.Site.Integration
 
         public void SendMessage(string message)
         {
-            if (slackOptions?.PostUrl == null)
+            if (string.IsNullOrEmpty(slackOptions?.PostUrl))
                 return;
 
             using (var client = new HttpClient())

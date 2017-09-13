@@ -1,5 +1,6 @@
 ﻿namespace Chess.Site.Controllers
 {
+    using System.Diagnostics;
     using System.Linq;
     using Dal;
     using Microsoft.AspNetCore.Mvc;
@@ -87,6 +88,11 @@
             slackService.SendMessage(message);
 
             return RedirectToAction("Index");
+        }
+
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         private void UpdatePlayerDecipoints(Session session, Player player)
