@@ -69,5 +69,40 @@
 
             return (int)Round(K * (sa - ea) * 100m, 0);
         }
+
+        public decimal GetPlayerScore(int playerId)
+        {
+            if (WhitePlayerId == playerId)
+            {
+                switch (Winner)
+                {
+                    case Winner.White:
+                        return 1;
+                    case Winner.Black:
+                        return 0;
+                    case Winner.Nobody:
+                        return (decimal) 0.5;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            if (BlackPlayerId == playerId)
+            {
+                switch (Winner)
+                {
+                    case Winner.White:
+                        return 0;
+                    case Winner.Black:
+                        return 1;
+                    case Winner.Nobody:
+                        return (decimal) 0.5;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            throw new ArgumentOutOfRangeException("Игрок не принимал участия в партии");
+
+        }
     }
 }
