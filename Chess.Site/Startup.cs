@@ -24,6 +24,7 @@
 
             services.AddTransient<SessionFactory>();
             services.AddTransient<SlackService>();
+            services.AddTransient<RatingRepository>();
 
             services.AddMvc();
         }
