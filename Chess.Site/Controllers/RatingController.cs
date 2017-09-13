@@ -1,5 +1,6 @@
 ﻿namespace Chess.Site.Controllers
 {
+    using System.Diagnostics;
     using System.Linq;
     using Dal;
     using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,13 @@
     {
         private readonly SessionFactory sessionFactory;
         private readonly SlackService slackService;
+        private readonly RatingRepository ratingRepository;
 
-        public RatingController(SessionFactory sessionFactory, SlackService slackService)
+        public RatingController(SessionFactory sessionFactory, SlackService slackService, RatingRepository ratingRepository)
         {
             this.sessionFactory = sessionFactory;
             this.slackService = slackService;
+            this.ratingRepository = ratingRepository;
         }
 
         [HttpGet]
@@ -25,7 +28,7 @@
         {
             var viewModel = sessionFactory.Execute(s =>
             {
-                var players = GetPlayers(s);
+                var players = ratingRepository.GetPlayers(s);
 
                 return new RatingViewModel
                 {
@@ -40,7 +43,7 @@
                                     )
                                     .ToArray()
                     ,
-                    LatestResults = s.Query<GameResult>("SELECT * FROM gameResults ORDER BY createdAt DESC")
+                    LatestResults = ratingRepository.GetGameResults(s)
                                      .Select(x => new ResultViewModel
                                                   {
                                                       Winner = x.Winner,
@@ -68,18 +71,17 @@
             string message = null;
             sessionFactory.Execute(s =>
             {
-                var whitePlayer = GetPlayerById(s, dto.WhitePlayerId);
-                var blackPlayer = GetPlayerById(s, dto.BlackPlayerId);
+                var whitePlayer = ratingRepository.GetPlayerById(s, dto.WhitePlayerId);
+                var blackPlayer = ratingRepository.GetPlayerById(s, dto.BlackPlayerId);
                 var whiteRating = whitePlayer.Points;
                 var blackRating = blackPlayer.Points;
 
 
                 var result = new GameResult(whitePlayer, blackPlayer, dto.Winner);
-                s.Execute(@"INSERT INTO gameResults(whitePlayerId, blackPlayerId, whiteDeltaDecipoints, blackDeltaDecipoints, winner, createdAt)
-                            VALUES(@WhitePlayerId, @BlackPlayerId, @WhiteDeltaDecipoints, @BlackDeltaDecipoints, @Winner, @CreatedAt)", result);
+                ratingRepository.SaveGameResult(s, result);
 
-                UpdatePlayerDecipoints(s, whitePlayer);
-                UpdatePlayerDecipoints(s, blackPlayer);
+                ratingRepository.UpdatePlayerDecipoints(s, whitePlayer);
+                ratingRepository.UpdatePlayerDecipoints(s, blackPlayer);
 
                 message = $"{whitePlayer.Name} vs {blackPlayer.Name}... {dto.Winner.EnumDisplayNameFor()}!\n   {whitePlayer.Name} {whiteRating} -> {whitePlayer.Points}\n   {blackPlayer.Name} {blackRating} -> {blackPlayer.Points} ";
             });
@@ -89,25 +91,15 @@
             return RedirectToAction("Index");
         }
 
-        private void UpdatePlayerDecipoints(Session session, Player player)
+        public IActionResult Error()
         {
-            session.Execute("UPDATE players SET decipoints=@Decipoints WHERE id=@Id", player);
-        }
-
-        private Player GetPlayerById(Session session, int playerId)
-        {
-            return session.Query<Player>("SELECT * FROM players WHERE id=@playerId", new { playerId }).Single();
-        }
-
-        private Player[] GetPlayers(Session session)
-        {
-            return session.Query<Player>("SELECT * FROM players ORDER BY id");
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         [HttpGet]
         public IActionResult Players()
         {
-            var players = sessionFactory.Execute(s => GetPlayers(s));
+            var players = sessionFactory.Execute(s => ratingRepository.GetPlayers(s));
 
             return View(new PlayersViewModel
             {
@@ -123,8 +115,13 @@
 
             sessionFactory.Execute(s =>
             {
-                s.Execute("INSERT INTO players(name, slackNickname, decipoints) VALUES(@Name, @SlackNickname, @Decipoints)",
-                    new {dto.Name, dto.SlackNickname, Decipoints = GameResult.StartDecipoints});
+                var palyer = new Player
+                {
+                    Name = dto.Name,
+                    Decipoints = GameResult.StartDecipoints,
+                    SlackNickname = dto.SlackNickname
+                };
+                ratingRepository.SavePlayer(s, palyer);
             });
 
             return RedirectToAction("Players");

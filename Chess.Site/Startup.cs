@@ -24,6 +24,7 @@
 
             services.AddTransient<SessionFactory>();
             services.AddTransient<SlackService>();
+            services.AddTransient<RatingRepository>();
 
             services.AddMvc();
         }
@@ -51,7 +52,7 @@
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Rating}/{action=Index}/{id?}");
             });
         }
 
