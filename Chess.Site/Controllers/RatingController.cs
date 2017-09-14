@@ -32,30 +32,28 @@
 
                 return new RatingViewModel
                 {
-                    Players = players.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() }).ToArray(),
+                    Players = players.Select(x => new SelectListItem {Text = x.Name, Value = x.Id.ToString()}).ToArray(),
                     Rating = players.OrderByDescending(x => x.Decipoints)
-                                    .ThenBy(x => x.Id)
-                                    .Select(x => new Rating
-                                                 {
-                                                     Name = x.Name,
-                                                     Points = x.Points
-                                                 }
-                                    )
-                                    .ToArray()
-                    ,
+                        .ThenBy(x => x.Id)
+                        .Select(x => new Rating
+                            {
+                                Name = x.Name,
+                                Points = x.Points
+                            }
+                        )
+                        .ToArray(),
                     LatestResults = ratingRepository.GetGameResults(s)
-                                     .Select(x => new ResultViewModel
-                                                  {
-                                                      Winner = x.Winner,
-                                                      BlackPlayer = players.Single(p => p.Id == x.BlackPlayerId).Name,
-                                                      WhitePlayer = players.Single(p => p.Id == x.WhitePlayerId).Name,
-                                                      PlayedAt = x.CreatedAt,
-                                                      BlackDeltaPoints = x.BlackDeltaPoints,
-                                                      WhiteDeltaPoints = x.WhiteDeltaPoints
-                                                  }
-                                     )
-                                     .ToArray()
-
+                        .Select(x => new ResultViewModel
+                            {
+                                Winner = x.Winner,
+                                BlackPlayer = players.Single(p => p.Id == x.BlackPlayerId).Name,
+                                WhitePlayer = players.Single(p => p.Id == x.WhitePlayerId).Name,
+                                PlayedAt = x.CreatedAt,
+                                BlackDeltaPoints = x.BlackDeltaPoints,
+                                WhiteDeltaPoints = x.WhiteDeltaPoints
+                            }
+                        )
+                        .ToArray()
                 };
             });
 
@@ -83,7 +81,15 @@
                 ratingRepository.UpdatePlayerDecipoints(s, whitePlayer);
                 ratingRepository.UpdatePlayerDecipoints(s, blackPlayer);
 
-                message = $"{whitePlayer.Name} vs {blackPlayer.Name}... {dto.Winner.EnumDisplayNameFor()}!\n   {whitePlayer.Name} {whiteRating} -> {whitePlayer.Points}\n   {blackPlayer.Name} {blackRating} -> {blackPlayer.Points} ";
+                var games = ratingRepository.GetGameResults(s)
+                .Where(x=>x.WhitePlayerId == whitePlayer.Id && x.BlackPlayerId == blackPlayer.Id ||
+                          x.WhitePlayerId == blackPlayer.Id && x.BlackPlayerId == whitePlayer.Id
+                )
+                .ToList();
+                
+                message = $@"{whitePlayer.Name} vs {blackPlayer.Name}... {dto.Winner.EnumDisplayNameFor()}! Личный счёт {games.Sum(x=>x.GetPlayerScore(whitePlayer.Id))}:{games.Sum(x => x.GetPlayerScore(blackPlayer.Id))}
+{whitePlayer.Name} {whiteRating} -> {whitePlayer.Points}
+{blackPlayer.Name} {blackRating} -> {blackPlayer.Points} ";
             });
 
             slackService.SendMessage(message);
