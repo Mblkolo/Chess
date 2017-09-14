@@ -81,7 +81,7 @@
                     case Winner.Black:
                         return 0;
                     case Winner.Nobody:
-                        return (decimal) 0.5;
+                        return 0.5m;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -95,7 +95,7 @@
                     case Winner.Black:
                         return 1;
                     case Winner.Nobody:
-                        return (decimal) 0.5;
+                        return 0.5m;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
