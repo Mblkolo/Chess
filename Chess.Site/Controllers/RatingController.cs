@@ -101,7 +101,7 @@
                     {
                         if (player.Insignias.Contains(insignia.Key) == false && insignia.Value.Func(result, player, players.Single(x => x != player)))
                         {
-                            player.Insignias += insignia.Key;
+                            player.Insignias += insignia.Key+";";
                             message += $@"
 {player.Name} получает орден {insignia.Key} «{insignia.Value.Name}» {insignia.Value.SlackEmoji}! ";
                             ratingRepository.UpdatePlayerInsignias(s, player);

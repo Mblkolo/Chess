@@ -15,7 +15,7 @@ namespace Chess.Site.Domain
                     SlackEmoji = ":chicken:",
                     Description = "Сыграть партию до 9 утра",
                     Func = (result, player, opponent) =>
-                    {
+                    {   
                         var cheTime = DateTime.UtcNow.AddHours(5);
                         return cheTime.Hour < 9 && cheTime.Hour >= 6;
                     }
