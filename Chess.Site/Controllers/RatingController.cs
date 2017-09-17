@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Chess.Site.Controllers
+﻿namespace Chess.Site.Controllers
 {
     using System.Diagnostics;
     using System.Linq;
@@ -18,43 +15,6 @@ namespace Chess.Site.Controllers
         private readonly SessionFactory sessionFactory;
         private readonly SlackService slackService;
         private readonly RatingRepository ratingRepository;
-
-        private Dictionary<string, Insignia> Insignias = new List<Insignia>()
-            {
-                new Insignia
-                {
-                    Name = "Ранняя пташка",
-                    Emoji = "🐔",
-                    SlackEmoji = ":chicken:",
-                    Description = "Сыграть партию до 9 утра",
-                    Func = (result, player, opponent) =>
-                    {
-                        var cheTime = DateTime.UtcNow.AddHours(5);
-                        return cheTime.Hour < 9 && cheTime.Hour >= 6;
-                    }
-                },
-                new Insignia
-                {
-                    Name = "Сова",
-                    Emoji = "🦉",
-                    SlackEmoji = ":coffee:",
-                    Description = "Сыграть партию после 8 вечера",
-                    Func = (result, player, opponent) =>
-                    {
-                        var cheTime = DateTime.UtcNow.AddHours(5);
-                        return cheTime.Hour >= 20;
-                    }
-                },
-                new Insignia
-                {
-                    Name = "Гроза Ансара",
-                    Emoji = "🌩",
-                    SlackEmoji = ":ewok:",
-                    Description = "Выиграть Ансара",
-                    Func = (result, player, opponent) => result.GetPlayerScore(player.Id) == 1 && opponent.Name == "Ансар"
-                },
-            }
-            .ToDictionary(x => x.Emoji);
 
         public RatingController(SessionFactory sessionFactory, SlackService slackService, RatingRepository ratingRepository)
         {
@@ -78,7 +38,8 @@ namespace Chess.Site.Controllers
                         .Select(x => new Rating
                             {
                                 Name = x.Name,
-                                Points = x.Points
+                                Points = x.Points,
+                                Insignias = x.Insignias
                             }
                         )
                         .ToArray(),
@@ -136,7 +97,7 @@ namespace Chess.Site.Controllers
                 {
                     if (player.Insignias == null)
                         player.Insignias = "";
-                    foreach (var insignia in Insignias)
+                    foreach (var insignia in InsigniasService.Insignias)
                     {
                         if (player.Insignias.Contains(insignia.Key) == false && insignia.Value.Func(result, player, players.Single(x => x != player)))
                         {
@@ -152,15 +113,6 @@ namespace Chess.Site.Controllers
             slackService.SendMessage(message);
 
             return RedirectToAction("Index");
-        }
-
-        private class Insignia
-        {
-            public string Emoji { get; set; }
-            public string SlackEmoji { get; set; }
-            public string Name { get; set; }
-            public string Description { get; set; }
-            public Func<GameResult, Player, Player, bool> Func { get; set; }
         }
 
         public IActionResult Error()
