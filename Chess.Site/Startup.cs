@@ -82,6 +82,13 @@
                             createdAt TEXT NOT NULL
                         )");
                 }
+
+                s.Execute(
+                    @"IF COL_LENGTH('players', 'insignias') IS NULL
+                        BEGIN
+                            ALTER TABLE players
+                            ADD insignias TEXT
+                        END");
             });
         }
     }

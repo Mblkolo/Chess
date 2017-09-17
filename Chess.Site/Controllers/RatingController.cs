@@ -1,4 +1,7 @@
-﻿namespace Chess.Site.Controllers
+﻿using System;
+using System.Collections.Generic;
+
+namespace Chess.Site.Controllers
 {
     using System.Diagnostics;
     using System.Linq;
@@ -15,6 +18,35 @@
         private readonly SessionFactory sessionFactory;
         private readonly SlackService slackService;
         private readonly RatingRepository ratingRepository;
+
+        private Dictionary<string, Insignia> Insignias = new List<Insignia>()
+            {
+                new Insignia
+                {
+                    Name = "Ранняя пташка",
+                    Emoji = "🐔",
+                    SlackEmoji = ":chicken:",
+                    Description = "Сыграть партию до 9 утра",
+                    Func = () =>
+                    {
+                        var cheTime = DateTime.UtcNow.AddHours(5);
+                        return cheTime.Hour < 9 && cheTime.Hour >= 6;
+                    }
+                },
+                new Insignia
+                {
+                    Name = "Сова",
+                    Emoji = "🦉",
+                    SlackEmoji = ":coffee:",
+                    Description = "Сыграть партию после 8 вечера",
+                    Func = () =>
+                    {
+                        var cheTime = DateTime.UtcNow.AddHours(5);
+                        return cheTime.Hour >= 20;
+                    }
+                },
+            }
+            .ToDictionary(x => x.Emoji);
 
         public RatingController(SessionFactory sessionFactory, SlackService slackService, RatingRepository ratingRepository)
         {
@@ -90,11 +122,37 @@
                 message = $@"{whitePlayer.Name} vs {blackPlayer.Name}... {dto.Winner.EnumDisplayNameFor()}! Личный счёт {games.Sum(x=>x.GetPlayerScore(whitePlayer.Id))}:{games.Sum(x => x.GetPlayerScore(blackPlayer.Id))}
 {whitePlayer.Name} {whiteRating} -> {whitePlayer.Points}
 {blackPlayer.Name} {blackRating} -> {blackPlayer.Points} ";
+
+                foreach (var player in new[] {whitePlayer, blackPlayer})
+                {
+                    if (player.Insignias == null)
+                        player.Insignias = "";
+                    foreach (var insignia in Insignias)
+                    {
+                        if (player.Insignias.Contains(insignia.Key) == false && insignia.Value.Func())
+                        {
+                            player.Insignias += insignia.Key;
+                            message += $@"
+{player.Name} получает орден {insignia.Key} «{insignia.Value.Name}» {insignia.Value.SlackEmoji}!
+";
+                            ratingRepository.UpdatePlayerInsignias(s, player);
+                        }
+                    }
+                }
             });
 
             slackService.SendMessage(message);
 
             return RedirectToAction("Index");
+        }
+
+        private class Insignia
+        {
+            public string Emoji { get; set; }
+            public string SlackEmoji { get; set; }
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public Func<bool> Func { get; set; }
         }
 
         public IActionResult Error()

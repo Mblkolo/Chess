@@ -8,5 +8,6 @@
         public decimal Points => Decipoints / 100m;
 
         public int Decipoints { get; set; }
+        public string Insignias { get; set; }
     }
 }
