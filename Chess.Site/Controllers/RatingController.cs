@@ -133,8 +133,7 @@ namespace Chess.Site.Controllers
                         {
                             player.Insignias += insignia.Key;
                             message += $@"
-{player.Name} получает орден {insignia.Key} «{insignia.Value.Name}» {insignia.Value.SlackEmoji}!
-";
+{player.Name} получает орден {insignia.Key} «{insignia.Value.Name}» {insignia.Value.SlackEmoji}! ";
                             ratingRepository.UpdatePlayerInsignias(s, player);
                         }
                     }
