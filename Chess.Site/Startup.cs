@@ -1,4 +1,7 @@
-﻿namespace Chess.Site
+﻿using System;
+using Microsoft.Data.Sqlite;
+
+namespace Chess.Site
 {
     using Dal;
     using Integration;
@@ -83,12 +86,17 @@
                         )");
                 }
 
-                s.Execute(
-                    @"IF COL_LENGTH('players', 'insignias') IS NULL
-                        BEGIN
-                            ALTER TABLE players
-                            ADD insignias TEXT
-                        END");
+                try
+                {
+                    s.Execute(
+                        @"ALTER TABLE players
+                            ADD insignias TEXT");
+                }
+                catch (SqliteException e)
+                {
+                    
+                }
+            
             });
         }
     }
