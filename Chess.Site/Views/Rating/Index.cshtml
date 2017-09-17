@@ -32,7 +32,7 @@
                         <td>
                             @if (string.IsNullOrEmpty(rating.Insignias) == false)
                             {
-                                foreach (var item in rating.Insignias.Split(';'))
+                                foreach (var item in rating.Insignias.Split(';', StringSplitOptions.RemoveEmptyEntries))
                                 {
                                     <label title="@InsigniasService.Insignias[item].Description">@item</label>
                                 }
