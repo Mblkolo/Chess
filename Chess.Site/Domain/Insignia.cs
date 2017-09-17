@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Chess.Site.Domain
 {
@@ -8,6 +9,6 @@ namespace Chess.Site.Domain
         public string SlackEmoji { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public Func<GameResult, Player, Player, bool> Func { get; set; }
+        public Func<GameResult, Player, Player, List<GameResult>, bool> Func { get; set; }
     }
 }

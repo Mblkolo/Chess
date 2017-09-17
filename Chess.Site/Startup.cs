@@ -96,7 +96,6 @@ namespace Chess.Site
                 {
                     
                 }
-            
             });
         }
     }

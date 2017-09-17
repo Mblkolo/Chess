@@ -70,6 +70,11 @@
             return (int)Round(K * (sa - ea) * 100m, 0);
         }
 
+        public bool WithPlayer(int playerId)
+        {
+            return WhitePlayerId == playerId || BlackPlayerId == playerId;
+        }
+
         public decimal GetPlayerScore(int playerId)
         {
             if (WhitePlayerId == playerId)
