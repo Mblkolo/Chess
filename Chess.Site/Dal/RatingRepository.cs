@@ -22,6 +22,11 @@
             session.Execute("UPDATE players SET decipoints=@Decipoints WHERE id=@Id", player);
         }
 
+        public void UpdatePlayerInsignias(Session session, Player player)
+        {
+            session.Execute("UPDATE players SET insignias=@Insignias WHERE id=@Id", player);
+        }
+
         public Player GetPlayerById(Session session, int playerId)
         {
             return session.Query<Player>("SELECT * FROM players WHERE id=@playerId", new { playerId }).Single();

@@ -43,6 +43,7 @@ namespace Chess.Site.Models
     {
         public decimal Points { get; set; }
         public string Name { get; set; }
+        public string Insignias { get; set; }
     }
 
 

@@ -38,7 +38,8 @@
                         .Select(x => new Rating
                             {
                                 Name = x.Name,
-                                Points = x.Points
+                                Points = x.Points,
+                                Insignias = x.Insignias
                             }
                         )
                         .ToArray(),
@@ -81,15 +82,33 @@
                 ratingRepository.UpdatePlayerDecipoints(s, whitePlayer);
                 ratingRepository.UpdatePlayerDecipoints(s, blackPlayer);
 
-                var games = ratingRepository.GetGameResults(s)
+                var allGames = ratingRepository.GetGameResults(s).ToList();
+                var pairGames = allGames
                 .Where(x=>x.WhitePlayerId == whitePlayer.Id && x.BlackPlayerId == blackPlayer.Id ||
                           x.WhitePlayerId == blackPlayer.Id && x.BlackPlayerId == whitePlayer.Id
                 )
                 .ToList();
                 
-                message = $@"{whitePlayer.Name} vs {blackPlayer.Name}... {dto.Winner.EnumDisplayNameFor()}! Личный счёт {games.Sum(x=>x.GetPlayerScore(whitePlayer.Id))}:{games.Sum(x => x.GetPlayerScore(blackPlayer.Id))}
+                message = $@"{whitePlayer.Name} vs {blackPlayer.Name}... {dto.Winner.EnumDisplayNameFor()}! Личный счёт {pairGames.Sum(x=>x.GetPlayerScore(whitePlayer.Id))}:{pairGames.Sum(x => x.GetPlayerScore(blackPlayer.Id))}
 {whitePlayer.Name} {whiteRating} -> {whitePlayer.Points}
 {blackPlayer.Name} {blackRating} -> {blackPlayer.Points} ";
+
+                var players = new[] {whitePlayer, blackPlayer};
+                foreach (var player in players)
+                {
+                    if (player.Insignias == null)
+                        player.Insignias = "";
+                    foreach (var insignia in InsigniasService.Insignias)
+                    {
+                        if (player.Insignias.Contains(insignia.Key) == false && insignia.Value.Func(result, player, players.Single(x => x != player), allGames))
+                        {
+                            player.Insignias += insignia.Key+";";
+                            message += $@"
+{player.Name} получает орден {insignia.Key} «{insignia.Value.Name}» {insignia.Value.SlackEmoji}! ";
+                            ratingRepository.UpdatePlayerInsignias(s, player);
+                        }
+                    }
+                }
             });
 
             slackService.SendMessage(message);

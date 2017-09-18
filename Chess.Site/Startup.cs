@@ -1,4 +1,7 @@
-﻿namespace Chess.Site
+﻿using System;
+using Microsoft.Data.Sqlite;
+
+namespace Chess.Site
 {
     using Dal;
     using Integration;
@@ -81,6 +84,17 @@
                             winner TEXT NOT NULL,
                             createdAt TEXT NOT NULL
                         )");
+                }
+
+                try
+                {
+                    s.Execute(
+                        @"ALTER TABLE players
+                            ADD insignias TEXT");
+                }
+                catch (SqliteException e)
+                {
+                    
                 }
             });
         }
