@@ -102,9 +102,9 @@
                 )
                 .ToList();
                 
-                message = $@"{whitePlayer.Name} vs {blackPlayer.Name}... {dto.Winner.EnumDisplayNameFor()}! Личный счёт {pairGames.Sum(x=>x.GetPlayerScore(whitePlayer.Id))}:{pairGames.Sum(x => x.GetPlayerScore(blackPlayer.Id))}
-{whitePlayer.Name} {whiteRating} -> {whitePlayer.Points}
-{blackPlayer.Name} {blackRating} -> {blackPlayer.Points} ";
+                message = $@"{whitePlayer.GetSlackName()} vs {blackPlayer.GetSlackName()}... {dto.Winner.EnumDisplayNameFor()}! Личный счёт {pairGames.Sum(x=>x.GetPlayerScore(whitePlayer.Id))}:{pairGames.Sum(x => x.GetPlayerScore(blackPlayer.Id))}
+{whitePlayer.GetSlackName()} {whiteRating} -> {whitePlayer.Points}
+{blackPlayer.GetSlackName()} {blackRating} -> {blackPlayer.Points} ";
 
                 var players = new[] {whitePlayer, blackPlayer};
                 foreach (var player in players)
@@ -117,7 +117,7 @@
                         {
                             player.Insignias += insignia.Key+";";
                             message += $@"
-{player.Name} получает орден {insignia.Key} «{insignia.Value.Name}» {insignia.Value.SlackEmoji}! ";
+{player.GetSlackName()} получает орден {insignia.Key} «{insignia.Value.Name}» {insignia.Value.SlackEmoji}! ";
                             ratingRepository.UpdatePlayerInsignias(s, player);
                         }
                     }
