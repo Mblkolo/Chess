@@ -114,6 +114,13 @@ namespace Chess.Site.Domain
                     Description = "Первая победа чёрных после серии побед белых",
                     Func = (result, player, opponent, games) => result.GetPlayerScore(player.Id) == 1 && result.Winner == Winner.Black &&
                                                                 LastWinsCount(games.OrderByDescending(x=>x.CreatedAt).Skip(1).ToList(), Winner.White) >= 3
+                },
+                new Insignia
+                {
+                    Name = "Стас",
+                    Emoji = "👨🏻",
+                    SlackEmoji = ":man:",
+                    Func = (result, player, opponent, games) => player.Name.ToLower() == "стас" || player.Name.ToLower() == "станислав"
                 }
             }
             .ToDictionary(x => x.Emoji);
