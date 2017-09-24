@@ -34,7 +34,7 @@
                             {
                                 foreach (var item in rating.Insignias.Split(';', StringSplitOptions.RemoveEmptyEntries))
                                 {
-                                    <label title="@InsigniasService.Insignias[item].Description">@item</label>
+                                    <label title="@InsigniasService.Insignias[item].GetTitle()">@item</label>
                                 }
                             }
                         </td>
