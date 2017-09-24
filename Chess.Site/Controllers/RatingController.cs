@@ -29,6 +29,7 @@
             var viewModel = sessionFactory.Execute(s =>
             {
                 var players = ratingRepository.GetPlayers(s);
+                var allGames = ratingRepository.GetGameResults(s).ToList();
 
                 return new RatingViewModel
                 {
@@ -39,7 +40,19 @@
                             {
                                 Name = x.Name,
                                 Points = x.Points,
-                                Insignias = x.Insignias
+                                Insignias = x.Insignias,
+                                Games = allGames.Count(g => g.WithPlayer(x.Id)),
+                                WhiteGames = allGames.Count(g => g.WhitePlayerId == x.Id),
+                                BlackGames = allGames.Count(g => g.BlackPlayerId == x.Id),
+                                Wins = allGames.Count(g => g.BlackPlayerId == x.Id && g.Winner == Winner.Black || g.WhitePlayerId == x.Id && g.Winner == Winner.White),
+                                WhiteWins = allGames.Count(g => g.WhitePlayerId == x.Id && g.Winner == Winner.White),
+                                BlackWins = allGames.Count(g => g.BlackPlayerId == x.Id && g.Winner == Winner.Black),
+                                Loses = allGames.Count(g => g.BlackPlayerId == x.Id && g.Winner == Winner.White || g.WhitePlayerId == x.Id && g.Winner == Winner.Black),
+                                WhiteLoses = allGames.Count(g => g.WhitePlayerId == x.Id && g.Winner == Winner.Black),
+                                BlackLoses = allGames.Count(g => g.BlackPlayerId == x.Id && g.Winner == Winner.White),
+                                Draws = allGames.Count(g => g.WithPlayer(x.Id) && g.Winner == Winner.Nobody),
+                                WhiteDraws = allGames.Count(g => g.WhitePlayerId == x.Id && g.Winner == Winner.Nobody),
+                                BlackDraws = allGames.Count(g => g.BlackPlayerId == x.Id && g.Winner == Winner.Nobody),
                             }
                         )
                         .ToArray(),
