@@ -79,6 +79,14 @@ namespace Chess.Site.Domain
                     SlackEmoji = ":a:",
                     Description = "Победа над игроком, имя которого начинается с той же буквы",
                     Func = (result, player, opponent, games) => result.GetPlayerScore(player.Id) == 1 && opponent.Name.ToLower()[0] == player.Name.ToLower()[0]
+                },
+                new Insignia
+                {
+                    Name = "Первая победа месяца",
+                    Emoji = "📆",
+                    SlackEmoji = ":date:",
+                    Func = (result, player, opponent, games) => result.GetPlayerScore(player.Id) == 1 &&
+                                                                games.Any(g => g.CreatedAt.Year == result.CreatedAt.Year && g.CreatedAt.Month == result.CreatedAt.Month) == false
                 }
             }
             .ToDictionary(x => x.Emoji);
