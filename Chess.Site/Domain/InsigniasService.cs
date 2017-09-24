@@ -71,6 +71,14 @@ namespace Chess.Site.Domain
                     SlackEmoji = ":boy:",
                     Description = "10 побед",
                     Func = (result, player, opponent, games) => WinsCount(result, player, games, 10)
+                },
+                new Insignia
+                {
+                    Name = "Буквоед",
+                    Emoji = "🅰",
+                    SlackEmoji = ":a:",
+                    Description = "Победа над игроком, имя которого начинается с той же буквы",
+                    Func = (result, player, opponent, games) => result.GetPlayerScore(player.Id) == 1 && opponent.Name.ToLower()[0] == player.Name.ToLower()[0]
                 }
             }
             .ToDictionary(x => x.Emoji);
