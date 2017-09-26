@@ -44,6 +44,19 @@ namespace Chess.Site.Models
         public decimal Points { get; set; }
         public string Name { get; set; }
         public string Insignias { get; set; }
+
+        public int Games { get; set; }
+        public int WhiteGames { get; set; }
+        public int BlackGames { get; set; }
+        public int Wins { get; set; }
+        public int WhiteWins { get; set; }
+        public int BlackWins { get; set; }
+        public int Loses { get; set; }
+        public int BlackLoses{ get; set; }
+        public int WhiteLoses { get; set; }
+        public int Draws { get; set; }
+        public int WhiteDraws { get; set; }
+        public int BlackDraws { get; set; }
     }
 
 

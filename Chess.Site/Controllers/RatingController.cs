@@ -29,6 +29,7 @@
             var viewModel = sessionFactory.Execute(s =>
             {
                 var players = ratingRepository.GetPlayers(s);
+                var allGames = ratingRepository.GetGameResults(s).ToList();
 
                 return new RatingViewModel
                 {
@@ -39,7 +40,19 @@
                             {
                                 Name = x.Name,
                                 Points = x.Points,
-                                Insignias = x.Insignias
+                                Insignias = x.Insignias,
+                                Games = allGames.Count(g => g.WithPlayer(x.Id)),
+                                WhiteGames = allGames.Count(g => g.WhitePlayerId == x.Id),
+                                BlackGames = allGames.Count(g => g.BlackPlayerId == x.Id),
+                                Wins = allGames.Count(g => g.BlackPlayerId == x.Id && g.Winner == Winner.Black || g.WhitePlayerId == x.Id && g.Winner == Winner.White),
+                                WhiteWins = allGames.Count(g => g.WhitePlayerId == x.Id && g.Winner == Winner.White),
+                                BlackWins = allGames.Count(g => g.BlackPlayerId == x.Id && g.Winner == Winner.Black),
+                                Loses = allGames.Count(g => g.BlackPlayerId == x.Id && g.Winner == Winner.White || g.WhitePlayerId == x.Id && g.Winner == Winner.Black),
+                                WhiteLoses = allGames.Count(g => g.WhitePlayerId == x.Id && g.Winner == Winner.Black),
+                                BlackLoses = allGames.Count(g => g.BlackPlayerId == x.Id && g.Winner == Winner.White),
+                                Draws = allGames.Count(g => g.WithPlayer(x.Id) && g.Winner == Winner.Nobody),
+                                WhiteDraws = allGames.Count(g => g.WhitePlayerId == x.Id && g.Winner == Winner.Nobody),
+                                BlackDraws = allGames.Count(g => g.BlackPlayerId == x.Id && g.Winner == Winner.Nobody),
                             }
                         )
                         .ToArray(),
@@ -89,9 +102,9 @@
                 )
                 .ToList();
                 
-                message = $@"{whitePlayer.Name} vs {blackPlayer.Name}... {dto.Winner.EnumDisplayNameFor()}! Личный счёт {pairGames.Sum(x=>x.GetPlayerScore(whitePlayer.Id))}:{pairGames.Sum(x => x.GetPlayerScore(blackPlayer.Id))}
-{whitePlayer.Name} {whiteRating} -> {whitePlayer.Points}
-{blackPlayer.Name} {blackRating} -> {blackPlayer.Points} ";
+                message = $@"{whitePlayer.GetSlackName()} vs {blackPlayer.GetSlackName()}... {dto.Winner.EnumDisplayNameFor()}! Личный счёт {pairGames.Sum(x=>x.GetPlayerScore(whitePlayer.Id))}:{pairGames.Sum(x => x.GetPlayerScore(blackPlayer.Id))}
+{whitePlayer.GetSlackName()} {whiteRating} -> {whitePlayer.Points}
+{blackPlayer.GetSlackName()} {blackRating} -> {blackPlayer.Points} ";
 
                 var players = new[] {whitePlayer, blackPlayer};
                 foreach (var player in players)
@@ -104,7 +117,7 @@
                         {
                             player.Insignias += insignia.Key+";";
                             message += $@"
-{player.Name} получает орден {insignia.Key} «{insignia.Value.Name}» {insignia.Value.SlackEmoji}! ";
+{player.GetSlackName()} получает орден {insignia.Key} «{insignia.Value.Name}» {insignia.Value.SlackEmoji}! ";
                             ratingRepository.UpdatePlayerInsignias(s, player);
                         }
                     }

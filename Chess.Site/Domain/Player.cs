@@ -9,5 +9,16 @@
 
         public int Decipoints { get; set; }
         public string Insignias { get; set; }
+
+        public string GetSlackName()
+        {
+            if (string.IsNullOrEmpty(SlackNickname))
+                return Name;
+
+            if (SlackNickname.StartsWith('@'))
+                return SlackNickname;
+
+            return "@" + SlackNickname;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Chess.Site.Models;
 
 namespace Chess.Site.Domain
 {
@@ -71,6 +72,55 @@ namespace Chess.Site.Domain
                     SlackEmoji = ":boy:",
                     Description = "10 побед",
                     Func = (result, player, opponent, games) => WinsCount(result, player, games, 10)
+                },
+                new Insignia
+                {
+                    Name = "Буквоед",
+                    Emoji = "🅰",
+                    SlackEmoji = ":a:",
+                    Description = "Победа над игроком, имя которого начинается с той же буквы",
+                    Func = (result, player, opponent, games) => result.GetPlayerScore(player.Id) == 1 && opponent.Name.ToLower()[0] == player.Name.ToLower()[0]
+                },
+                new Insignia
+                {
+                    Name = "Первая победа месяца",
+                    Emoji = "📆",
+                    SlackEmoji = ":date:",
+                    Func = (result, player, opponent, games) => result.GetPlayerScore(player.Id) == 1 &&
+                                                                games.Any(g => g.CreatedAt.Year == result.CreatedAt.Year && g.CreatedAt.Month == result.CreatedAt.Month) == false
+                },
+                new Insignia
+                {
+                    Name = "Первая победа года",
+                    Emoji = "🗓",
+                    SlackEmoji = ":calendar:",
+                    Func = (result, player, opponent, games) => result.GetPlayerScore(player.Id) == 1 &&
+                                                                games.Any(g => g.CreatedAt.Year == result.CreatedAt.Year) == false
+                },
+                new Insignia
+                {
+                    Name = "Белый конь",
+                    Emoji = "🦄",
+                    SlackEmoji = ":unicorn_face:",
+                    Description = "Первая победа белых после серии побед чёрных",
+                    Func = (result, player, opponent, games) => result.GetPlayerScore(player.Id) == 1 && result.Winner == Winner.White &&
+                                                                LastWinsCount(games.OrderByDescending(x=>x.CreatedAt).Skip(1).ToList(), Winner.Black) >= 3
+                },
+                new Insignia
+                {
+                    Name = "Чёрный слон",
+                    Emoji = "🦍",
+                    SlackEmoji = ":monkey:",
+                    Description = "Первая победа чёрных после серии побед белых",
+                    Func = (result, player, opponent, games) => result.GetPlayerScore(player.Id) == 1 && result.Winner == Winner.Black &&
+                                                                LastWinsCount(games.OrderByDescending(x=>x.CreatedAt).Skip(1).ToList(), Winner.White) >= 3
+                },
+                new Insignia
+                {
+                    Name = "Стас",
+                    Emoji = "👨🏻",
+                    SlackEmoji = ":man:",
+                    Func = (result, player, opponent, games) => player.Name.ToLower() == "стас" || player.Name.ToLower() == "станислав"
                 }
             }
             .ToDictionary(x => x.Emoji);
@@ -88,6 +138,14 @@ namespace Chess.Site.Domain
                 .Where(x => x.WithPlayer(player.Id))
                 .OrderByDescending(x => x.CreatedAt)
                 .TakeWhile(x => x.GetPlayerScore(player.Id) == 1)
+                .Count();
+        }
+
+        private static int LastWinsCount(List<GameResult> games, Winner winner)
+        {
+            return games
+                .OrderByDescending(x => x.CreatedAt)
+                .TakeWhile(x => x.Winner == winner)
                 .Count();
         }
     }

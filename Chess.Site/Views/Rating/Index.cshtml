@@ -20,6 +20,13 @@
                 {
                     <th>Ордена</th>
                 }
+                <th>Игр</th>
+                <th>Очков</th>
+                <th>Процент</th>
+                <th>Игр белыми</th>
+                <th>Игр чёрными</th>
+                <th>Процент белыми</th>
+                <th>Процент чёрными</th>
             </tr>
             </thead>
             @foreach (var rating in Model.Rating)
@@ -34,11 +41,23 @@
                             {
                                 foreach (var item in rating.Insignias.Split(';', StringSplitOptions.RemoveEmptyEntries))
                                 {
-                                    <label title="@InsigniasService.Insignias[item].Description">@item</label>
+                                    <label title="@InsigniasService.Insignias[item].GetTitle()">@item</label>
                                 }
                             }
                         </td>
                     }
+                    
+                    <td>@rating.Games</td>
+                    <td>
+                        @{
+                            var scores = rating.Wins + rating.Draws/2M;
+                        }
+                        @scores.ToString("0.##")</td>
+                    <td>@((scores/ rating.Games * 100).ToString("0.##"))%</td>
+                    <td>@rating.WhiteGames</td>
+                    <td>@rating.BlackGames</td>
+                    <td>@(((rating.WhiteWins + rating.WhiteDraws / 2M) / rating.WhiteGames * 100).ToString("0.##"))%</td>
+                    <td>@(((rating.BlackWins + rating.BlackDraws / 2M) / rating.BlackGames * 100).ToString("0.##"))%</td>
                 </tr>
             }
 
