@@ -53,11 +53,11 @@
                             var scores = rating.Wins + rating.Draws/2M;
                         }
                         @scores.ToString("0.##")</td>
-                    <td>@((scores/ rating.Games * 100).ToString("0.##"))%</td>
+                    <td>@(rating.Games == 0 ? "0" : (scores/ rating.Games * 100).ToString("0.##"))%</td>
                     <td>@rating.WhiteGames</td>
                     <td>@rating.BlackGames</td>
-                    <td>@(((rating.WhiteWins + rating.WhiteDraws / 2M) / rating.WhiteGames * 100).ToString("0.##"))%</td>
-                    <td>@(((rating.BlackWins + rating.BlackDraws / 2M) / rating.BlackGames * 100).ToString("0.##"))%</td>
+                    <td>@(rating.WhiteGames == 0 ? "0" : ((rating.WhiteWins + rating.WhiteDraws / 2M) / rating.WhiteGames * 100).ToString("0.##"))%</td>
+                    <td>@(rating.BlackGames == 0 ? "0" : ((rating.BlackWins + rating.BlackDraws / 2M) / rating.BlackGames * 100).ToString("0.##"))%</td>
                 </tr>
             }
 
